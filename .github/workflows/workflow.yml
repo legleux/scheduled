@@ -16,7 +16,6 @@ jobs:
         run: |
           echo "#!/bin/bash" >> runme.sh
           echo "am app" >> runme.sh
-          mv
 
       - name: Release
         uses: softprops/action-gh-release@v1
