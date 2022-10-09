@@ -8,6 +8,17 @@ on:
 
 
 jobs:
+  build-it:
+    runs-on: ubuntu-latest
+    container:
+      image: legleux/amm-builder
+      volumes:
+        - $PWD/rippled:/rippled
+    #   options: --cpus 1
+    # steps:
+    #   - name: Check for dockerenv file
+    #     run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
+
   build:
     runs-on: ubuntu-latest
     steps:
