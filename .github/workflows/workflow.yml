@@ -37,11 +37,8 @@ jobs:
       - name: Build
         run: |
           git clone --depth 1 --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
-          echo "***in gh***"
-          echo $PWD
-          ls -lah
-          echo "***********"
           docker run -v $PWD/rippled:/rippled legleux/amm-builder
+          find . -name "rippled"
 
       - uses: avakar/tag-and-release@v1
         with:
@@ -54,4 +51,4 @@ jobs:
         with:
           name: "Version ${{ steps.vars.outputs.sha_short }}"
           tag_name: ${{ steps.vars.outputs.tag_name }}
-          files: rippled/build/rippled
+          files: rippled/build-docker/rippled
