@@ -44,6 +44,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: version_${{ steps.vars.outputs.sha_short }}
+          name: "Version ${{ steps.vars.outputs.sha_short }}"
           tag_name: ${{ steps.vars.outputs.tag_name }}
           files: runme-${{ steps.vars.outputs.sha_short }}.sh
