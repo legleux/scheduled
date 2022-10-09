@@ -28,12 +28,16 @@ jobs:
           echo ${{ steps.vars.outputs.release_time }}
           echo ${{ steps.vars.outputs.tag_name }}
 
-      - name: Build app
-        run: |
-          FILE=runme-${{ steps.vars.outputs.sha_short }}.sh
-          echo "#!/bin/bash" >> $FILE
-          echo "echo \"It's ${{ steps.vars.outputs.release_time }}\"" >> $FILE
+      # - name: Build app
+      #   run: |
+      #     FILE=runme-${{ steps.vars.outputs.sha_short }}.sh
+      #     echo "#!/bin/bash" >> $FILE
+      #     echo "echo \"It's ${{ steps.vars.outputs.release_time }}\"" >> $FILE
 
+      - name: Build
+        run: |
+          git clone --depth 1 --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
+          docker run -v $PWD:/rippled legleux/amm-builder
 
       - uses: avakar/tag-and-release@v1
         with:
@@ -46,4 +50,4 @@ jobs:
         with:
           name: "Version ${{ steps.vars.outputs.sha_short }}"
           tag_name: ${{ steps.vars.outputs.tag_name }}
-          files: runme-${{ steps.vars.outputs.sha_short }}.sh
+          files: rippled/build/rippled
