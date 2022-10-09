@@ -58,13 +58,13 @@ jobs:
 
       - uses: avakar/tag-and-release@v1
         with:
-          tag_name: ${{ steps.vars.outputs.tag_name }}
+          tag_name: ${{ steps.build.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "Version ${{ steps.vars.outputs.sha_short }}"
-          tag_name: ${{ steps.vars.outputs.tag_name }}
+          name: "Version ${{ steps.build.outputs.sha_short }}"
+          tag_name: ${{ steps.build.outputs.tag_name }}
           files: rippled/build-docker/rippled
