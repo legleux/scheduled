@@ -36,7 +36,7 @@ jobs:
 
       - uses: avakar/tag-and-release@v1
         with:
-          tag_name: v_${{ steps.vars.outputs.tag_name }}
+          tag_name: ${{ steps.vars.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
