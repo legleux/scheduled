@@ -30,8 +30,9 @@ jobs:
 
       - name: Build app
         run: |
-          echo "#!/bin/bash" >> runme-${{ steps.vars.outputs.sha_short }}.sh
-          echo "echo \"It's ${{ steps.vars.outputs.release_time }}\"" >> runme-${{ steps.vars.outputs.sha_short }}.sh
+          FILE=runme-${{ steps.vars.outputs.sha_short }}.sh
+          echo "#!/bin/bash" >> $FILE
+          echo "echo \"It's ${{ steps.vars.outputs.release_time }}\"" >> $FILE
 
 
       - uses: avakar/tag-and-release@v1
