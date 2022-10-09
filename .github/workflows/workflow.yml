@@ -36,13 +36,13 @@ jobs:
 
       - uses: avakar/tag-and-release@v1
         with:
-          tag_name: v_${{ steps.vars.outputs.sha_short }}
+          tag_name: v_${{ steps.vars.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: version_${{ steps.vars.outputs.tag_name }}
-          tag_name: ${{ steps.vars.outputs.sha_short }}
+          name: version_${{ steps.vars.outputs.sha_short }}
+          tag_name: ${{ steps.vars.outputs.tag_name }}
           files: runme-${{ steps.vars.outputs.sha_short }}.sh
