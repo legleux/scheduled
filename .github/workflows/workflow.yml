@@ -37,6 +37,10 @@ jobs:
       - name: Build
         run: |
           git clone --depth 1 --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
+          echo "***in gh***"
+          echo $PWD
+          ls -lah
+          echo "***********"
           docker run -v $PWD:/rippled legleux/amm-builder
 
       - uses: avakar/tag-and-release@v1
