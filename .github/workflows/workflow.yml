@@ -38,6 +38,9 @@ jobs:
         run: |
           # git clone --depth 1 --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
           git clone --depth 1 --branch "master" "https://github.com/legleux/source.git" rippled
+          cd rippled
+          git rev-parse --short HEAD
+          echo "::set-output name=tag_name::version_${TIME}"
           docker run -v $PWD/rippled:/rippled legleux/amm-builder
           find . -name "rippled"
 
