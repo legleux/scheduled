@@ -14,21 +14,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Add SHORT_SHA env property with commit short sha
-        run: |
-          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
-          echo "TAG=version_$SHORT_SHA" >> $GITHUB_ENV
+      - name: Set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Check outputs
+        run: echo ${{ steps.vars.outputs.sha_short }}
 
       - name: Build app
         run: |
-          echo "#!/bin/bash" >> runme-${GITHUB_SHA}.sh
-          echo "am app" >> runme-${GITHUB_SHA}.sh
-          echo "it's $(date +"%D - %H:%M:%S")" >> runme-${GITHUB_SHA}.sh
+          echo "#!/bin/bash" >> runme-${{ steps.vars.outputs.sha_short }}.sh
+          echo "am app" >> runme-${{ steps.vars.outputs.sha_short }}.sh
+          echo "it's $(date +"%D - %H:%M:%S")" >> runme-${{ steps.vars.outputs.sha_short }}.sh
 
 
       - uses: avakar/tag-and-release@v1
         with:
-          tag_name: ${{ env.TAG }}
+          tag_name: v_${{ steps.vars.outputs.sha_short }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -38,5 +39,5 @@ jobs:
       #   uses: softprops/action-gh-release@v1
       #   # if: startsWith(github.ref, 'refs/tags/')
       #   with:
-      #     name: version_${GITHUB_SHA}
-      #     files: runme-${GITHUB_SHA}.sh
+      #     name: version_${{ steps.vars.outputs.sha_short }}
+      #     files: runme-${{ steps.vars.outputs.sha_short }}.sh
