@@ -37,6 +37,8 @@ jobs:
       - name: Build
         id: build
         run: |
+          # git clone --depth 1 --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
+          git clone --depth 1 --branch "master" "https://github.com/legleux/source.git" rippled
           cd rippled
           GIT_REV=$(git rev-parse --short HEAD)
           echo "::set-output name=sha_short::${GIT_REV}"
@@ -48,8 +50,6 @@ jobs:
           echo ${{ steps.vars.outputs.release_time }}
           echo ${{ steps.vars.outputs.tag_name }}
 
-          # git clone --depth 1 --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
-          git clone --depth 1 --branch "master" "https://github.com/legleux/source.git" rippled
           docker run -v $PWD:/rippled legleux/amm-builder
           find . -name "rippled"
 
