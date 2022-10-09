@@ -13,14 +13,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+
       - name: Build app
         run: |
-          echo "#!/bin/bash" >> runme.sh
-          echo "am app" >> runme.sh
-          echo "it's $(date +"%D - %H:%M:%S")" >> runme.sh
+          echo "#!/bin/bash" >> runme-${GITHUB_SHA}.sh
+          echo "am app" >> runme-${GITHUB_SHA}.sh
+          echo "it's $(date +"%D - %H:%M:%S")" >> runme-${GITHUB_SHA}.sh
 
       - name: Release
         uses: softprops/action-gh-release@v1
         # if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: runme.sh
+          name: version_${GITHUB_SHA}
+          files: runme-${GITHUB_SHA}.sh
