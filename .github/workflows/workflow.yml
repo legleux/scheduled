@@ -3,7 +3,7 @@ name: Build release
 on:
   schedule:
     # Runs "At 11:00 on every day-of-week from Monday through Friday"
-    - cron: '* * * * *'
+    - cron: '0 */1 * * *'
 
 
 jobs:
@@ -17,9 +17,10 @@ jobs:
         run: |
           echo "#!/bin/bash" >> runme.sh
           echo "am app" >> runme.sh
+          echo "it's $(date +"%D - %H:%M:%S")" >> runme.sh
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        # if: startsWith(github.ref, 'refs/tags/')
         with:
           files: runme.sh
