@@ -1,0 +1,25 @@
+name: Build release
+
+on:
+  schedule:
+    - cron: '2 * * * *'
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build app
+        run: |
+          echo "#!/bin/bash" >> runme.sh
+          echo "am app" >> runme.sh
+          mv
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: runme.sh
