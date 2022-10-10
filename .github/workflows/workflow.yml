@@ -48,7 +48,7 @@ jobs:
 
           docker run -v $PWD:/rippled legleux/amm-builder
           find . -name "rippled"
-          tar -I 'gzip -9' czvf rippled.tar.gz ./build/rippled
+          tar czvf rippled.tar.gz ./build/rippled
 
       - uses: avakar/tag-and-release@v1
         with:
