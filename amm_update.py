@@ -14,8 +14,11 @@ logging.basicConfig(
                     level=logging.INFO)
 
 ORGANIZATION = "legleux"
+ORGANIZATION = "gregtcam"
 REPOSITORY = "scheduled"
+REPOSITORY = "rippled"
 BRANCH = "main"
+BRANCH = "amm-core-functionality"
 BASE_URL = f"https://api.github.com/repos/{ORGANIZATION}/{REPOSITORY}"
 ASSETS_URL = f"{BASE_URL}/releases/latest"
 
