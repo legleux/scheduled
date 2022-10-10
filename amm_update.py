@@ -64,8 +64,10 @@ def dl_latest():
     assets = json.loads(requests.get(ASSETS_URL).content)
     latest_asset = assets.get('assets')[-1]
     name = latest_asset.get("name")
+    rippled_path = RIPPLED_INSTALL_PATH + name
     version = assets.get('name').split(" ")[1]
-    open(name, "wb").write(binary.content)
+    open(rippled_path, "wb").write(binary.content)
+    check_output(['chmod', '+x', rippled_path ])
     logging.info(f"Downloaded: {name} {version}")
 
 
