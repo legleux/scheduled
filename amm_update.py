@@ -37,8 +37,10 @@ def get_latest_source_commit():
 
 
 def get_installed_version():
-    version = call(["/opt/rippled/bin/rippled", "--version"])
-    return version
+    version_raw = check_output(['/opt/rippled/bin/rippled', '--version'])
+    version_str = version_raw.decode().replace('\n', '')
+    version_short = version_str.split("+")[1][0:9]
+    return version_short
 
 
 def get_release_url():
@@ -73,11 +75,11 @@ def dl_latest():
     logging.info(f"Downloaded: {name} {version}")
 
 
-def install_latest():
-    call(['rm', '/opt/rippled/rippled'])
-    os.chdir('/tmp')
-    dl_latest()
-    call(['mv', 'rippled', '/opt/rippled/rippled'])
+# def install_latest():
+#     call(['rm', '/opt/rippled/rippled'])
+#     os.chdir('/tmp')
+#     dl_latest()
+#     call(['mv', 'rippled', '/opt/rippled/rippled'])
 
 
 def start_rippled():
@@ -97,30 +99,8 @@ if __name__ == "__main__":
             logging.info("Up to date")
     if command == 'check_latest':
         try:
-            version = check_output(['/opt/rippled/bin/rippled', '--version'])
-            version = version.decode().replace('\n', '')
-            version = version.split("+")[1][0:9]
+            version = get_installed_version()
             if version != get_latest_release_version():
-                install_latest()
+                dl_latest()
         except Exception as e:
             logging.warning(e)
-
-
-    # elif command == 'return_true':
-    #     print("true")
-    # elif command == 'return_false':
-    #     print("false")
-    # if get_installed_version() !=  get_latest_release():
-    #     print("need to update local")
-
-    # if command == "test":
-    #     now = datetime.datetime.now()
-    #     print(f"Checking @ {now}...")
-    #     with open("/opt/runme/testfile.txt", "a") as f:
-    #         f.write("#!/bin/bash\n")
-    #         f.write("some data\n")
-    #         f.write(f'{now}\n"')
-    # elif command == "check":
-    #     print("gonna check")
-    # else:
-    #     print("gonna update")
