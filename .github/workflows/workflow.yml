@@ -36,9 +36,6 @@ jobs:
           # git clone --depth 1 --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
           git clone --depth 1 --branch "master" "https://github.com/legleux/source.git" rippled
           cd rippled
-          echo "Im in $PWD"
-          echo $(git rev-parse)
-          git log
           GIT_REV=$(git rev-parse --short HEAD)
           echo "::set-output name=sha_short::${GIT_REV}"
           TIME=$(date +"%Y-%m-%d-%H_%M_%S")
