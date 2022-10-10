@@ -48,6 +48,7 @@ jobs:
 
           docker run -v $PWD:/rippled legleux/amm-builder
           find . -name "rippled"
+          tar czvf rippled.tar.gz ./build/rippled
 
       - uses: avakar/tag-and-release@v1
         with:
@@ -60,4 +61,4 @@ jobs:
         with:
           name: "Version ${{ steps.build.outputs.sha_short }}"
           tag_name: ${{ steps.build.outputs.tag_name }}
-          files: rippled/build/rippled
+          files: rippled/rippled.tar.gz
