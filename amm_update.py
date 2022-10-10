@@ -14,7 +14,7 @@ logging.basicConfig(
                     level=logging.INFO)
 
 ORGANIZATION = "legleux"
-ORGANIZATION = "gregtcam"
+ORGANIZATION = "gregtatcam"
 REPOSITORY = "scheduled"
 REPOSITORY = "rippled"
 BRANCH = "main"
