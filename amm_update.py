@@ -28,7 +28,7 @@ ASSETS_URL = f"{RELEASES_URL}/releases/latest"
 
 SOURCE_REPO = f"https://api.github.com/repos/{SOURCE_ORG}/{SOURCE_REPO}/commits/{SOURCE_BRANCH}"
 
-RIPPLED_INSTALL_PATH = "/opt/rippled/bin"
+RIPPLED_INSTALL_PATH = "/opt/rippled/bin/"
 
 
 def get_latest_source_commit():
@@ -37,10 +37,14 @@ def get_latest_source_commit():
 
 
 def get_installed_version():
-    version_raw = check_output(['/opt/rippled/bin/rippled', '--version'])
-    version_str = version_raw.decode().replace('\n', '')
-    version_short = version_str.split("+")[1][0:9]
-    return version_short
+    try:
+        version_raw = check_output(['/opt/rippled/bin/rippled', '--version'])
+        version_str = version_raw.decode().replace('\n', '')
+        version_short = version_str.split("+")[1][0:9]
+        return version_short
+    except Exception as e:
+        logging.info('no rippled installed')
+        return None
 
 
 def get_release_url():
@@ -67,18 +71,24 @@ def dl_latest():
     release_url = get_release_url()
     logging.info(f"Release at URL: {release_url}")
     logging.info(f"Downloading release...")
+
     binary = requests.get(release_url)
     assets = json.loads(requests.get(ASSETS_URL).content)
     latest_asset = assets.get('assets')[-1]
     name = latest_asset.get("name")
     rippled_path = RIPPLED_INSTALL_PATH + bin_name
+
     logging.info(f"Installing to: {rippled_path}")
     version = assets.get('name').split(" ")[1]
     tar_path = f'/tmp/rippled-{version}/'
+    call(['rm', '-rf', tar_path])
     os.mkdir(tar_path)
     tar_file = f'{tar_path}{name}'
     open(tar_file, "wb").write(binary.content)
-    check_output(['tar', 'xzvf', tar_file, '-C', RIPPLED_INSTALL_PATH ])
+
+    call(['rm', '-rf', RIPPLED_INSTALL_PATH, '|| true'])
+    os.mkdir(RIPPLED_INSTALL_PATH)
+    check_output(['tar', 'xzvf', tar_file, '-C', RIPPLED_INSTALL_PATH])
     logging.info(f"Chmoding to: {rippled_path}")
     check_output(['chmod', '+x', rippled_path])
     logging.info(f"Installed: {name} {version}")
@@ -114,4 +124,5 @@ if __name__ == "__main__":
             if version != get_latest_release_version():
                 dl_latest()
         except Exception as e:
+            logging("Failed checking latest install...")
             logging.warning(e)
