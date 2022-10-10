@@ -13,24 +13,28 @@ logging.basicConfig(
                     datefmt='%H:%M:%S',
                     level=logging.INFO)
 
-ORGANIZATION = "legleux"
-ORGANIZATION = "gregtatcam"
-REPOSITORY = "scheduled"
-REPOSITORY = "rippled"
-BRANCH = "main"
-BRANCH = "amm-core-functionality"
-BASE_URL = f"https://api.github.com/repos/{ORGANIZATION}/{REPOSITORY}"
-ASSETS_URL = f"{BASE_URL}/releases/latest"
+# ORGANIZATION = "legleux"
+SOURCE_ORG = "gregtatcam"
+# REPOSITORY = "scheduled"
+SOURCE_REPO = "rippled"
+# BRANCH = "main"
+SOURCE_BRANCH = "amm-core-functionality"
+# RELEASES_ORG = "legleux"
+RELEASES_REPO = "scheduled"
+RELEASES_URL = f"https://api.github.com/repos/{RELEASES_ORG}/{RELEASES_REPO}"
+
+ASSETS_URL = f"{RELEASES_URL}/releases/latest"
+
+SOURCE_REPO = f"https://api.github.com/repos/{SOURCE_ORG}/{SOURCE_REPO}/commits/{SOURCE_BRANCH}"
 
 
 def get_latest_source_commit():
-    SOURCE_REPO = "https://api.github.com/repos/legleux/source/commits/master"
     latest_commit = json.loads(requests.get(SOURCE_REPO).content).get('sha')[0:7]
     return latest_commit
 
 
 def get_installed_version():
-    version = call(["cat", "/opt/rippled/version.txt"])
+    version = call(["/opt/rippled/bin/rippled", "--version"])
     return version
 
 
@@ -41,8 +45,11 @@ def get_release_url():
 
 
 def get_latest_release_version():
-    assets = json.loads(requests.get(ASSETS_URL).content)
-    version = assets.get('name').split(" ")[1]
+    try:
+        assets = json.loads(requests.get(ASSETS_URL).content)
+        version = assets.get('name').split(" ")[1]
+    except Exception as e:
+        logging.info(e)
     return version
 
 
