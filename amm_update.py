@@ -32,7 +32,7 @@ RIPPLED_INSTALL_PATH = "/opt/rippled/bin"
 
 
 def get_latest_source_commit():
-    latest_commit = json.loads(requests.get(SOURCE_REPO).content).get('sha')[0:7]
+    latest_commit = json.loads(requests.get(SOURCE_REPO).content).get('sha')[0:9]
     return latest_commit
 
 
@@ -69,7 +69,7 @@ def dl_latest():
     rippled_path = RIPPLED_INSTALL_PATH + name
     version = assets.get('name').split(" ")[1]
     open(rippled_path, "wb").write(binary.content)
-    check_output(['chmod', '+x', rippled_path ])
+    check_output(['chmod', '+x', rippled_path])
     logging.info(f"Downloaded: {name} {version}")
 
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         try:
             version = check_output(['/opt/rippled/bin/rippled', '--version'])
             version = version.decode().replace('\n', '')
-            version = version.split("+")[1][0:7]
+            version = version.split("+")[1][0:9]
             if version != get_latest_release_version():
                 install_latest()
         except Exception as e:
