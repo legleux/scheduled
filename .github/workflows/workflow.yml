@@ -36,6 +36,7 @@ jobs:
           # git clone --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
           git clone --branch "main" "https://github.com/legleux/am_test.git" rippled
           cd rippled
+          git config --global --add safe.directory $PWD
           GIT_REV=$(git rev-parse --short HEAD)
           echo "::set-output name=sha_short::${GIT_REV}"
           TIME=$(date +"%Y-%m-%d-%H_%M_%S")
