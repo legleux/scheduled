@@ -33,8 +33,8 @@ jobs:
       - name: Build
         id: build
         run: |
-          # git clone --depth 0 --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
-          git clone --depth 0 --branch "master" "https://github.com/legleux/source.git" rippled
+          # git clone --branch "amm-core-functionality" "https://github.com/gregtatcam/rippled.git"
+          git clone --branch "master" "https://github.com/legleux/source.git" rippled
           cd rippled
           GIT_REV=$(git rev-parse --short HEAD)
           echo "::set-output name=sha_short::${GIT_REV}"
