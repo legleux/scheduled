@@ -2,17 +2,36 @@ name: Build release
 
 on:
   schedule:
-    # Runs "At 11:00 on every day-of-week from Monday through Friday"
     - cron: '0 */1 * * *'
   push:
 
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
+    outputs:
+      release_needed: ${{ steps.check.outputs.release_needed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Check if release needed
+        id: check
+        run: |
+          RELEASE_NEEDED=$(python amm_update.py return_true)
+          echo "::set-output name=release_needed::${RELEASE_NEEDED}"
+
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ needs.check.outputs.release_needed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check if release needed
+        run: |
+          RELEASE_NEEDED=$(python amm_update.py check_release_needed)
+          echo "::set-output name=release_needed::${RELEASE_NEEDED}"
 
       - name: Set outputs
         id: vars
@@ -22,6 +41,7 @@ jobs:
           TIME=$(date +"%Y-%m-%d-%H_%M_%S")
           echo "::set-output name=release_time::${TIME}"
           echo "::set-output name=tag_name::version_${TIME}"
+
       - name: Check outputs
         run: |
           echo ${{ steps.vars.outputs.sha_short }}
