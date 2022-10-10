@@ -63,4 +63,4 @@ jobs:
         with:
           name: "Version ${{ steps.build.outputs.sha_short }}"
           tag_name: ${{ steps.build.outputs.tag_name }}
-          files: rippled/build-docker/rippled
+          files: rippled/build/rippled

@@ -32,7 +32,7 @@ def get_installed_version():
 
 def get_release_url():
     assets = json.loads(requests.get(ASSETS_URL).content)
-    latest_asset =  assets.get('assets')[-1]
+    latest_asset = assets.get('assets')[-1]
     return latest_asset.get("browser_download_url")
 
 
