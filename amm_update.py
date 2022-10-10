@@ -49,10 +49,14 @@ def release_needed():
 
 
 def dl_latest():
-    release_url  = get_release_url()
-    asset = requests.get(release_url)
-    open(name, "wb").write(asset.content)
-    logging.info(f"Downloaded: {version}")
+    release_url = get_release_url()
+    binary = requests.get(release_url)
+    assets = json.loads(requests.get(ASSETS_URL).content)
+    latest_asset = assets.get('assets')[-1]
+    name = latest_asset.get("name")
+    version = assets.get('name').split(" ")[1]
+    open(name, "wb").write(binary.content)
+    logging.info(f"Downloaded: {name} {version}")
 
 
 def install_latest():
@@ -77,10 +81,20 @@ if __name__ == "__main__":
             print("true")
         else:
             logging.info("Up to date")
-    elif command == 'return_true':
-        print("true")
-    elif command == 'return_false':
-        print("false")
+    if command == 'check_latest':
+        try:
+            version = call(['/opt/rippled/bin/rippled', '--version'])
+            version = version.split("+")[1]
+            if version != get_latest_release_version():
+                install_latest()
+        except Exception as e:
+            logging.warning(e)
+
+
+    # elif command == 'return_true':
+    #     print("true")
+    # elif command == 'return_false':
+    #     print("false")
     # if get_installed_version() !=  get_latest_release():
     #     print("need to update local")
 
