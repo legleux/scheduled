@@ -32,7 +32,7 @@ RIPPLED_INSTALL_PATH = "/opt/rippled/bin/"
 
 
 def get_latest_source_commit():
-    latest_commit = json.loads(requests.get(SOURCE_REPO).content).get('sha')[0:9]
+    latest_commit = json.loads(requests.get(SOURCE_REPO).content).get('sha')[0:7]
     return latest_commit
 
 
@@ -40,7 +40,7 @@ def get_installed_version():
     try:
         version_raw = check_output(['/opt/rippled/bin/rippled', '--version'])
         version_str = version_raw.decode().replace('\n', '')
-        version_short = version_str.split("+")[1][0:9]
+        version_short = version_str.split("+")[1][0:7]
         return version_short
     except Exception as e:
         logging.info('no rippled installed')
@@ -92,7 +92,9 @@ def dl_latest():
     logging.info(f"Chmoding to: {rippled_path}")
     check_output(['chmod', '+x', rippled_path])
     logging.info(f"Installed: {name} {version}")
-    ripd_ver = check_output([rippled_path, '--version'])
+    with open('/opt/rippled/bin/gitrev.txt', 'w') as f:
+        f.write(version)
+    ripd_ver = check_output([rippled_path, '--version']).decode()
     logging.info(f"Rippled thinks it's {ripd_ver}")
 
 
@@ -120,9 +122,14 @@ if __name__ == "__main__":
             logging.info("Up to date")
     if command == 'check_latest':
         try:
+            latest_release = get_latest_release_version()
             version = get_installed_version()
-            if version != get_latest_release_version():
-                dl_latest()
+            if version != latest_release:
+                logging.info(f'local version mismatch {version} not {latest_release}')
+                if latest_release != check_output(['cat', '/opt/rippled/bin/gitrev.txt']).decode():
+                    logging.info('gitrev.txt mismatch, must really be outdated...')
+                    dl_latest()
+            else:
+                logging.info(f'Local install {version} matches latest release {latest_release}')
         except Exception as e:
-            logging("Failed checking latest install...")
             logging.warning(e)
