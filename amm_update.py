@@ -14,12 +14,13 @@ logging.basicConfig(
                     level=logging.INFO)
 
 # ORGANIZATION = "legleux"
-SOURCE_ORG = "gregtatcam"
 # REPOSITORY = "scheduled"
-SOURCE_REPO = "rippled"
 # BRANCH = "main"
+SOURCE_ORG = "gregtatcam"
+SOURCE_REPO = "rippled"
 SOURCE_BRANCH = "amm-core-functionality"
-# RELEASES_ORG = "legleux"
+
+RELEASES_ORG = "legleux"
 RELEASES_REPO = "scheduled"
 RELEASES_URL = f"https://api.github.com/repos/{RELEASES_ORG}/{RELEASES_REPO}"
 
