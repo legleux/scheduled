@@ -4,7 +4,7 @@ import json
 import requests
 import sys
 import datetime
-from subprocess import call
+from subprocess import call, check_output
 import logging
 import os
 # from multiprocessing import Process
@@ -93,8 +93,9 @@ if __name__ == "__main__":
             logging.info("Up to date")
     if command == 'check_latest':
         try:
-            version = call(['/opt/rippled/bin/rippled', '--version'])
-            version = version.split("+")[1]
+            version = check_output(['/opt/rippled/bin/rippled', '--version'])
+            version = version.decode().replace('\n', '')
+            version = version.split("+")[1][0:7]
             if version != get_latest_release_version():
                 install_latest()
         except Exception as e:
