@@ -16,9 +16,9 @@ logging.basicConfig(
 # ORGANIZATION = "legleux"
 # REPOSITORY = "scheduled"
 # BRANCH = "main"
-SOURCE_ORG = "gregtatcam"
-SOURCE_REPO = "rippled"
-SOURCE_BRANCH = "amm-core-functionality"
+SOURCE_ORG = "legleux"
+SOURCE_REPO = "am_test"
+SOURCE_BRANCH = "main"
 
 RELEASES_ORG = "legleux"
 RELEASES_REPO = "scheduled"
@@ -27,6 +27,8 @@ RELEASES_URL = f"https://api.github.com/repos/{RELEASES_ORG}/{RELEASES_REPO}"
 ASSETS_URL = f"{RELEASES_URL}/releases/latest"
 
 SOURCE_REPO = f"https://api.github.com/repos/{SOURCE_ORG}/{SOURCE_REPO}/commits/{SOURCE_BRANCH}"
+
+RIPPLED_INSTALL_PATH = "/opt/rippled/bin"
 
 
 def get_latest_source_commit():
