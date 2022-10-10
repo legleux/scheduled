@@ -27,37 +27,8 @@ jobs:
     if: needs.check.outputs.release_needed == 'true'
     steps:
 
-      - name: check output
-        run: |
-          echo "output from previous job: ${{ needs.check.outputs.release_needed }}"
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Check if release needed
-        run: |
-          RELEASE_NEEDED=$(python amm_update.py check_release_needed)
-          echo "::set-output name=release_needed::${RELEASE_NEEDED}"
-
-      - name: Set outputs
-        id: vars
-        run: |
-          GIT_REV=$(git rev-parse --short HEAD)
-          echo "::set-output name=sha_short::${GIT_REV}"
-          TIME=$(date +"%Y-%m-%d-%H_%M_%S")
-          echo "::set-output name=release_time::${TIME}"
-          echo "::set-output name=tag_name::version_${TIME}"
-
-      - name: Check outputs
-        run: |
-          echo ${{ steps.vars.outputs.sha_short }}
-          echo ${{ steps.vars.outputs.release_time }}
-          echo ${{ steps.vars.outputs.tag_name }}
-
-      # - name: Build app
-      #   run: |
-      #     FILE=runme-${{ steps.vars.outputs.sha_short }}.sh
-      #     echo "#!/bin/bash" >> $FILE
-      #     echo "echo \"It's ${{ steps.vars.outputs.release_time }}\"" >> $FILE
 
       - name: Build
         id: build
