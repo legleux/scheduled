@@ -38,8 +38,6 @@ def get_release_url():
 
 def get_latest_release_version():
     assets = json.loads(requests.get(ASSETS_URL).content)
-    latest_asset =  assets.get('assets')[-1]
-    name = latest_asset.get("name")
     version = assets.get('name').split(" ")[1]
     return version
 
