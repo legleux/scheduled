@@ -63,16 +63,27 @@ def release_needed():
 
 
 def dl_latest():
+    bin_name = 'rippled'
     release_url = get_release_url()
+    logging.info(f"Release at URL: {release_url}")
+    logging.info(f"Downloading release...")
     binary = requests.get(release_url)
     assets = json.loads(requests.get(ASSETS_URL).content)
     latest_asset = assets.get('assets')[-1]
     name = latest_asset.get("name")
-    rippled_path = RIPPLED_INSTALL_PATH + name
+    rippled_path = RIPPLED_INSTALL_PATH + bin_name
+    logging.info(f"Installing to: {rippled_path}")
     version = assets.get('name').split(" ")[1]
-    open(rippled_path, "wb").write(binary.content)
+    tar_path = f'/tmp/rippled-{version}/'
+    os.mkdir(tar_path)
+    tar_file = f'{tar_path}{name}'
+    open(tar_file, "wb").write(binary.content)
+    check_output(['tar', 'xzvf', tar_file, '-C', RIPPLED_INSTALL_PATH ])
+    logging.info(f"Chmoding to: {rippled_path}")
     check_output(['chmod', '+x', rippled_path])
-    logging.info(f"Downloaded: {name} {version}")
+    logging.info(f"Installed: {name} {version}")
+    ripd_ver = check_output([rippled_path, '--version'])
+    logging.info(f"Rippled thinks it's {ripd_ver}")
 
 
 # def install_latest():
