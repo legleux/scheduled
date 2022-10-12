@@ -7,6 +7,8 @@ import datetime
 from subprocess import call, check_output
 import logging
 import os
+import dbus
+
 # from multiprocessing import Process
 logging.basicConfig(
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
@@ -94,6 +96,11 @@ def dl_latest():
     ripd_ver = check_output([rippled_path, '--version']).decode()
     logging.info(f"Rippled thinks it's {ripd_ver}")
 
+def restart_rippled():
+    sysbus = dbus.SystemBus()
+    systemd1 = sysbus.get_object('org.freedesktop.systemd1', '/org/freedesktop/systemd1')
+    manager = dbus.Interface(systemd1, 'org.freedesktop.systemd1.Manager')
+    job = manager.RestartUnit('rippled.service', 'fail')
 
 if __name__ == "__main__":
 
@@ -115,6 +122,7 @@ if __name__ == "__main__":
                 if latest_release != check_output(['cat', '/opt/rippled/bin/gitrev.txt']).decode():
                     logging.info('gitrev.txt mismatch, must really be outdated...')
                     dl_latest()
+                    restart_rippled()
             else:
                 logging.info(f'Local install {version} matches latest release {latest_release}')
         except Exception as e:
