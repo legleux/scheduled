@@ -13,12 +13,9 @@ logging.basicConfig(
                     datefmt='%H:%M:%S',
                     level=logging.INFO)
 
-# ORGANIZATION = "legleux"
-# REPOSITORY = "scheduled"
-# BRANCH = "main"
-SOURCE_ORG = "legleux"
-SOURCE_REPO = "am_test"
-SOURCE_BRANCH = "main"
+SOURCE_ORG = "gregtatcam"
+SOURCE_REPO = "rippled"
+SOURCE_BRANCH = "amm-core-functionality"
 
 RELEASES_ORG = "legleux"
 RELEASES_REPO = "scheduled"
@@ -96,17 +93,6 @@ def dl_latest():
         f.write(version)
     ripd_ver = check_output([rippled_path, '--version']).decode()
     logging.info(f"Rippled thinks it's {ripd_ver}")
-
-
-# def install_latest():
-#     call(['rm', '/opt/rippled/rippled'])
-#     os.chdir('/tmp')
-#     dl_latest()
-#     call(['mv', 'rippled', '/opt/rippled/rippled'])
-
-
-def start_rippled():
-    pass
 
 
 if __name__ == "__main__":
