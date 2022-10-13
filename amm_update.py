@@ -37,12 +37,12 @@ def get_latest_source_commit():
 
 def get_installed_version():
     try:
-        version_raw = check_output(['/opt/rippled/bin/rippled', '--version'])
+        version_raw = check_output([RIPPLED_INSTALL_PATH +'rippled', '--version'])
         version_str = version_raw.decode().replace('\n', '')
         version_short = version_str.split("+")[1][0:7]
         return version_short
     except Exception as e:
-        logging.info('no rippled installed')
+        logging.info('no rippled installed or debug not installed')
         return None
 
 
@@ -55,7 +55,7 @@ def get_release_url():
 def get_latest_release_version():
     try:
         assets = json.loads(requests.get(ASSETS_URL).content)
-        version = assets.get('name').split(" ")[1]
+        version = assets.get('name').split(" ")[1][0:7]
     except Exception as e:
         logging.info(e)
     return version
