@@ -28,7 +28,7 @@ ASSETS_URL = f"{RELEASES_URL}/releases/latest"
 SOURCE_REPO = f"https://api.github.com/repos/{SOURCE_ORG}/{SOURCE_REPO}/commits/{SOURCE_BRANCH}"
 
 RIPPLED_INSTALL_PATH = "/opt/ripple/bin/"
-GITREV_FILE = '/opt/ripple/bin/gitrev.txt'
+GITREV_FILE = f'{RIPPLED_INSTALL_PATH}gitrev.txt'
 
 def get_latest_source_commit():
     latest_commit = json.loads(requests.get(SOURCE_REPO).content).get('sha')[0:7]
@@ -42,8 +42,12 @@ def get_installed_version():
         version_short = version_str.split("+")[1][0:7]
         return version_short
     except Exception as e:
-        logging.info('no rippled installed or debug not installed')
-        return None
+        logging.info(e)
+        logging.info('no rippled installed')
+        logging.info('debug not installed')
+    finally:
+        dl_latest()
+
 
 
 def get_release_url():
@@ -53,21 +57,23 @@ def get_release_url():
 
 
 def get_latest_release_version():
-    try:
-        assets = json.loads(requests.get(ASSETS_URL).content)
-        version = assets.get('name').split(" ")[1][0:7]
-    except Exception as e:
-        logging.info(e)
+    # try:
+    assets = json.loads(requests.get(ASSETS_URL).content)
+    version = assets.get('name').split(" ")[1][0:7]
     return version
+    # except Exception as e:
+    #     logging.info(e)
 
 def write_gitrev_file():
     version = get_latest_release_version()
+    logging.info(f'Wrote {version} to {GITREV_FILE}')
+
     with open(GITREV_FILE, 'w') as f:
         f.write(version)
+    logging.info(f'Wrote {version} to {GITREV_FILE}')
 
 def release_needed():
     return get_latest_source_commit() != get_latest_release_version()
-
 
 def dl_latest():
     bin_name = 'rippled'
@@ -83,7 +89,7 @@ def dl_latest():
 
     logging.info(f"Installing to: {rippled_path}")
     version = assets.get('name').split(" ")[1]
-    breakpoint()
+    # breakpoint()
     tar_path = f'/tmp/rippled-{version}/'
     call(['rm', '-rf', tar_path])
     os.mkdir(tar_path)
@@ -99,6 +105,8 @@ def dl_latest():
     write_gitrev_file()
     ripd_ver = check_output([rippled_path, '--version']).decode()
     logging.info(f"Rippled thinks it's {ripd_ver}")
+    call(['rm', '-rf', tar_path])
+
 
 def restart_rippled():
     sysbus = dbus.SystemBus()
@@ -119,15 +127,15 @@ if __name__ == "__main__":
             logging.info("Up to date")
     if command == 'check_latest':
         if not os.path.exists(GITREV_FILE):
+            if not os.path.exists(RIPPLED_INSTALL_PATH):
+                logging.info("rippled must not be installed!")
+                os.mkdir(RIPPLED_INSTALL_PATH)
             write_gitrev_file()
 
         try:
             latest_release = get_latest_release_version()
             version = get_installed_version()
-            if version != latest_release:
-                logging.info(f'local version mismatch {version} not {latest_release}')
-                if latest_release != check_output(['cat', GITREV_FILE]).decode():
-                    logging.info('gitrev.txt mismatch, must really be outdated...')
+            if version != latest_release or latest_release != check_output(['cat', GITREV_FILE]).decode():
                     dl_latest()
                     restart_rippled()
             else:
