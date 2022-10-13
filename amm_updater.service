@@ -1,0 +1,10 @@
+[Unit]
+Description=AMM updater
+Wants=amm_updater.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/update_amm/amm_update.py check_latest
+
+[Install]
+WantedBy=multi-user.target
