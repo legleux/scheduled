@@ -27,8 +27,8 @@ ASSETS_URL = f"{RELEASES_URL}/releases/latest"
 
 SOURCE_REPO = f"https://api.github.com/repos/{SOURCE_ORG}/{SOURCE_REPO}/commits/{SOURCE_BRANCH}"
 
-RIPPLED_INSTALL_PATH = "/opt/rippled/bin/"
-
+RIPPLED_INSTALL_PATH = "/opt/ripple/bin/"
+GITREV_FILE = '/opt/ripple/bin/gitrev.txt'
 
 def get_latest_source_commit():
     latest_commit = json.loads(requests.get(SOURCE_REPO).content).get('sha')[0:7]
@@ -60,6 +60,10 @@ def get_latest_release_version():
         logging.info(e)
     return version
 
+def write_gitrev_file():
+    version = get_latest_release_version()
+    with open(GITREV_FILE, 'w') as f:
+        f.write(version)
 
 def release_needed():
     return get_latest_source_commit() != get_latest_release_version()
@@ -79,6 +83,7 @@ def dl_latest():
 
     logging.info(f"Installing to: {rippled_path}")
     version = assets.get('name').split(" ")[1]
+    breakpoint()
     tar_path = f'/tmp/rippled-{version}/'
     call(['rm', '-rf', tar_path])
     os.mkdir(tar_path)
@@ -91,8 +96,7 @@ def dl_latest():
     logging.info(f"Chmoding to: {rippled_path}")
     check_output(['chmod', '+x', rippled_path])
     logging.info(f"Installed: {name} {version}")
-    with open('/opt/rippled/bin/gitrev.txt', 'w') as f:
-        f.write(version)
+    write_gitrev_file()
     ripd_ver = check_output([rippled_path, '--version']).decode()
     logging.info(f"Rippled thinks it's {ripd_ver}")
 
@@ -114,12 +118,15 @@ if __name__ == "__main__":
         else:
             logging.info("Up to date")
     if command == 'check_latest':
+        if not os.path.exists(GITREV_FILE):
+            write_gitrev_file()
+
         try:
             latest_release = get_latest_release_version()
             version = get_installed_version()
             if version != latest_release:
                 logging.info(f'local version mismatch {version} not {latest_release}')
-                if latest_release != check_output(['cat', '/opt/rippled/bin/gitrev.txt']).decode():
+                if latest_release != check_output(['cat', GITREV_FILE]).decode():
                     logging.info('gitrev.txt mismatch, must really be outdated...')
                     dl_latest()
                     restart_rippled()
