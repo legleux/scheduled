@@ -47,7 +47,7 @@ jobs:
           echo ${{ steps.vars.outputs.release_time }}
           echo ${{ steps.vars.outputs.tag_name }}
 
-          docker run -v $PWD:/rippled legleux/amm-builder
+          docker run -u $(id -u):$(id -g) -v $PWD:/rippled legleux/amm-builder
           tar czvf rippled.tar.gz -C build rippled
 
       - uses: avakar/tag-and-release@v1
