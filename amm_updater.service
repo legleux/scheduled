@@ -3,8 +3,9 @@ Description=AMM updater
 Wants=amm_updater.timer
 
 [Service]
+SyslogIdentifier=amm-updater
 Type=oneshot
-ExecStart=/usr/bin/python3 /opt/amm_updater/amm_update.py check_latest
+ExecStart=/usr/bin/python3 /opt/amm_updater/amm_updater.py %i
 
 [Install]
 WantedBy=multi-user.target
