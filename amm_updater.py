@@ -149,7 +149,7 @@ def remove(path):
 
 
 def delete_db():
-    paths = [ path for path in ['/var/lib/rippled/db/', '/var/log/rippled/debug.log']]
+    paths = [ path for path in ['/space/rippled/db/', '/space/rippled/log/debug.log']]
     for path in paths:
         logging.info(f"Removing {path}")
         remove(path)
