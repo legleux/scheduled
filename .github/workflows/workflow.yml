@@ -18,7 +18,7 @@ jobs:
       - name: Check if release needed
         id: check
         run: |
-          RELEASE_NEEDED=$(python amm_update.py check_release_needed)
+          RELEASE_NEEDED=$(python amm_updater.py --check_release_needed)
           echo "::set-output name=release_needed::${RELEASE_NEEDED}"
 
   build:

@@ -8,16 +8,18 @@ from subprocess import call, check_output
 import subprocess
 import logging
 import os
-# import dbus
 import argparse
 import shutil
-# from fabric import Connection
 
-# from multiprocessing import Process
+filename='amm_updater.log'
+# logger = logging.getLogger("amm_updater")
+# fh = logging.FileHandler(filename, mode='a', encoding=None, delay=False, errors=None)
 logging.basicConfig(
+                    # handlers=[fh],
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.INFO)
+# logger.addHandler(fh)
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -40,9 +42,23 @@ GITREV_FILE = f'{RIPPLED_INSTALL_PATH}gitrev.txt'
 
 
 def get_latest_source_commit():
-    latest_commit = json.loads(requests.get(SOURCE_REPO).content).get('sha')[0:7]
-    return latest_commit
+    response = requests.get(SOURCE_REPO)
+    response_content = response.content
+    if response.ok:
+        limit = response.headers['X-RateLimit-Limit']
+        used = response.headers['X-RateLimit-Used']
+        logging.debug(f"{used}/{limit} API calls used")
 
+        latest_commit = response.json().get('sha')[0:7]
+        return latest_commit
+    else:
+        logging.info(f"Couldnt get latest commit from {SOURCE_REPO}")
+        logging.debug(f"Returned: {response.status_code}")
+        logging.debug(response.json()['message'])
+        t = response.headers['X-RateLimit-Reset']
+        tt = datetime.datetime.fromtimestamp(int(t)).strftime('%Y-%m-%d %H:%M:%S')
+        logging.debug(f"Rate limited until: {tt}")
+        sys.exit()
 
 def get_installed_version():
     try:
@@ -83,7 +99,11 @@ def write_gitrev_file():
 
 
 def release_needed():
-    return get_latest_source_commit() != get_latest_release_version()
+    src_hash = get_latest_source_commit()
+    bin_hash = get_latest_release_version()
+    logging.debug(f"Source code: {src_hash}] Latest binary built: {bin_hash}")
+    rel_needed = src_hash != bin_hash
+    return rel_needed
 
 
 def get_rippled_version():
@@ -189,13 +209,16 @@ def install_updater(server):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # parser.add_argument("install")
     parser.add_argument("--update_rippled", action="store_true")
     parser.add_argument("--reset_network", action="store_true")
     parser.add_argument("--update_and_reset_network", action="store_true")
     parser.add_argument("--check_release_needed", action="store_true")
     parser.add_argument("--check_latest", action="store_true")
+    parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     if args.update_rippled:
         logging.info("Updating rippled...")
@@ -209,11 +232,10 @@ if __name__ == "__main__":
 
     if args.check_release_needed:
         if release_needed():
-            update()
             logging.info("Need to build release")
-            print("true")
+            print("true") # printed for consumption by github action step output
         else:
-            logging.info("Up to date")
+            logging.info("Release up to date")
 
     if args.check_latest:
         if not os.path.exists(GITREV_FILE):
