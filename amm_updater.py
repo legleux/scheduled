@@ -236,7 +236,7 @@ if __name__ == "__main__":
         DB_PATH = AMM_DB_PATH
         LOG_PATH = AMM_LOG_PATH
 
-    if args.restart_rippled_after_install:
+    if args.restart_rippled:
         restart = True
     if args.update_rippled:
         logging.info("Updating rippled...")
