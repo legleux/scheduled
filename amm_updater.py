@@ -24,7 +24,10 @@ logging.basicConfig(
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("paramiko").setLevel(logging.WARNING)
-
+""" TODO:
+don't download if already did
+clean up tmp dir
+"""
 SOURCE_ORG = "gregtatcam"
 SOURCE_REPO = "rippled"
 SOURCE_BRANCH = "amm-core-functionality"
@@ -181,7 +184,7 @@ def delete_db():
         remove(path)
 
 
-def update_rippled(reset_network=False, restart=False):
+def update_rippled(reset_network=False, restart=True):
     install_latest()
     if reset_network:
         logging.info("Stopping rippled")
@@ -219,6 +222,7 @@ if __name__ == "__main__":
     parser.add_argument("--update_rippled", action="store_true")
     parser.add_argument("--reset_network", action="store_true")
     parser.add_argument("--update_and_reset_network", action="store_true")
+    parser.add_argument("--restart_rippled_after_install", action="store_true")
     parser.add_argument("--check_release_needed", action="store_true")
     parser.add_argument("--check_latest", action="store_true")
     parser.add_argument("--default", action="store_true", help="The db and log will be updated at the default locations. i.e. /var/lib and /var/log")
@@ -228,19 +232,21 @@ if __name__ == "__main__":
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    if args.default:
+    breakpoint()
+    if not args.default:
         DB_PATH = AMM_DB_PATH
         LOG_PATH = AMM_LOG_PATH
-
+    if args.restart_rippled_after_install:
+        restart = True
     if args.update_rippled:
         logging.info("Updating rippled...")
-        update_rippled()
+        update_rippled(restart=restart)
     elif args.reset_network:
         logging.info("Resetting network...")
         # reset_network()
     elif args.update_and_reset_network:
         logging.info("Updating rippled and resetting network...")
-        update_rippled(reset_network=True)
+        update_rippled(reset_network=True, restart=restart)
 
     if args.check_release_needed:
         if release_needed():
