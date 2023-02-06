@@ -39,7 +39,12 @@ SOURCE_REPO = f"https://api.github.com/repos/{SOURCE_ORG}/{SOURCE_REPO}/commits/
 
 RIPPLED_INSTALL_PATH = "/opt/ripple/bin/"
 GITREV_FILE = f'{RIPPLED_INSTALL_PATH}gitrev.txt'
+TMP_DIR = "/tmp"
 
+# DB_PATH = '/space/rippled/db/'
+# LOG_PATH =  '/space/rippled/log/debug.log'
+DB_PATH = '/var/lib/rippled/db/'
+LOG_PATH =  '/var/log/rippled/debug.log'
 
 def get_latest_source_commit():
     response = requests.get(SOURCE_REPO)
@@ -59,6 +64,7 @@ def get_latest_source_commit():
         tt = datetime.datetime.fromtimestamp(int(t)).strftime('%Y-%m-%d %H:%M:%S')
         logging.debug(f"Rate limited until: {tt}")
         sys.exit()
+
 
 def get_installed_version():
     try:
@@ -127,7 +133,7 @@ def install_latest():
 
     logging.info(f"Installing to: {rippled_path}")
     version = assets.get('name').split(" ")[1]
-    tar_path = f'/tmp/rippled-{version}/'
+    tar_path = f'/{TMP_DIR}/rippled-{version}/'
     call(['rm', '-rf', tar_path])
     os.mkdir(tar_path)
     tar_file = f'{tar_path}{name}'
@@ -169,13 +175,13 @@ def remove(path):
 
 
 def delete_db():
-    paths = [ path for path in ['/space/rippled/db/', '/space/rippled/log/debug.log']]
+    paths = [ path for path in [DB_PATH, LOG_PATH]]
     for path in paths:
         logging.info(f"Removing {path}")
         remove(path)
 
 
-def update_rippled(reset_network=False):
+def update_rippled(reset_network=False, restart=False):
     install_latest()
     if reset_network:
         logging.info("Stopping rippled")
@@ -183,8 +189,8 @@ def update_rippled(reset_network=False):
         logging.info("Deleting db")
         delete_db()
     logging.info("Starting rippled")
-    ## restart rippled
-    restart_rippled()
+    if restart: # may want to manually start rippled with --start flag t
+        restart_rippled()
     ## confirm up and running
 
 
@@ -206,6 +212,7 @@ def install_updater(server):
     serv = subprocess.run(f"scp amm_updater.service {server}:~".split(" "))
     mvserv = subprocess.run(f"ssh {server} sudo  mv ~/amm_updater.service /etc/systemd/system/amm_updater@.service".split(" "))
     return scp, mv, serv, mvserv
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
