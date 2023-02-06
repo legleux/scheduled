@@ -41,8 +41,8 @@ RIPPLED_INSTALL_PATH = "/opt/ripple/bin/"
 GITREV_FILE = f'{RIPPLED_INSTALL_PATH}gitrev.txt'
 TMP_DIR = "/tmp"
 
-# DB_PATH = '/space/rippled/db/'
-# LOG_PATH =  '/space/rippled/log/debug.log'
+AMM_DB_PATH = '/space/rippled/db/'
+AMM_LOG_PATH =  '/space/rippled/log/debug.log'
 DB_PATH = '/var/lib/rippled/db/'
 LOG_PATH =  '/var/log/rippled/debug.log'
 
@@ -221,11 +221,16 @@ if __name__ == "__main__":
     parser.add_argument("--update_and_reset_network", action="store_true")
     parser.add_argument("--check_release_needed", action="store_true")
     parser.add_argument("--check_latest", action="store_true")
+    parser.add_argument("--default", action="store_true", help="The db and log will be updated at the default locations. i.e. /var/lib and /var/log")
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
 
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
+
+    if args.default:
+        DB_PATH = AMM_DB_PATH
+        LOG_PATH = AMM_LOG_PATH
 
     if args.update_rippled:
         logging.info("Updating rippled...")
