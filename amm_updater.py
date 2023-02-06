@@ -168,14 +168,12 @@ def stop_rippled():
 
 
 def remove(path):
-    #if path exists
     if os.path.isfile(path) or os.path.islink(path):
         os.remove(path)
     elif os.path.isdir(path):
         shutil.rmtree(path)
     else:
-        raise ValueError(f"Couldn't delete {path}")
-
+        logging.debug(f"No rippled data to delete at {path}")
 
 def delete_db():
     paths = [ path for path in [DB_PATH, LOG_PATH]]
