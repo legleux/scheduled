@@ -222,7 +222,7 @@ if __name__ == "__main__":
     parser.add_argument("--update_rippled", action="store_true")
     parser.add_argument("--reset_network", action="store_true")
     parser.add_argument("--update_and_reset_network", action="store_true")
-    parser.add_argument("--restart_rippled_after_install", action="store_true")
+    parser.add_argument("--restart_rippled", action="store_true", help="Restart rippled via systemd after update")
     parser.add_argument("--check_release_needed", action="store_true")
     parser.add_argument("--check_latest", action="store_true")
     parser.add_argument("--default", action="store_true", help="The db and log will be updated at the default locations. i.e. /var/lib and /var/log")
@@ -232,10 +232,10 @@ if __name__ == "__main__":
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    breakpoint()
     if not args.default:
         DB_PATH = AMM_DB_PATH
         LOG_PATH = AMM_LOG_PATH
+
     if args.restart_rippled_after_install:
         restart = True
     if args.update_rippled:
